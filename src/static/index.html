@@ -39,6 +39,24 @@
         </form>
         <div id="message" class="hidden"></div>
       </section>
+
+      <section id="activities">
+        <h3>Activities</h3>
+
+        <!-- Example activity card updated with a data-participants attribute -->
+        <div class="activity-card" data-participants='["Alice Johnson","Sam Lee","Ravi Patel"]'>
+          <h4>Kayaking Trip</h4>
+          <p>Join us for a scenic kayak on the lake.</p>
+          <!-- participants will be rendered here by participants.js -->
+        </div>
+
+        <!-- Another example with no participants -->
+        <div class="activity-card" data-participants='[]'>
+          <h4>Trail Run</h4>
+          <p>5k trail run through the hills.</p>
+          <!-- participants will be rendered here by participants.js -->
+        </div>
+      </section>
     </main>
 
     <footer>
@@ -46,5 +64,7 @@
     </footer>
 
     <script src="app.js"></script>
+    <!-- Add the participants script (load after other scripts) -->
+    <script src="./participants.js"></script>
   </body>
 </html>
