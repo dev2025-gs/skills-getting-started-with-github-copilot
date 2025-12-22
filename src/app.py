@@ -49,7 +49,16 @@ def root():
 
 @app.get("/activities")
 def get_activities():
-    return activities
+    """Return activities with formatted descriptions"""
+    return {
+        name: {
+            "description": activity["description"],
+            "schedule": activity["schedule"],
+            "max_participants": activity["max_participants"],
+            "participants_count": len(activity["participants"])
+        }
+        for name, activity in activities.items()
+    }
 
 
 @app.post("/activities/{activity_name}/signup")
