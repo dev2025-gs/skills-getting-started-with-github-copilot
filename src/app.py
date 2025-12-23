@@ -38,6 +38,18 @@ activities = {
         "schedule": "Mondays, Wednesdays, Fridays, 2:00 PM - 3:00 PM",
         "max_participants": 30,
         "participants": ["john@mergington.edu", "olivia@mergington.edu"]
+    },
+    "Kayaking Trip": {
+        "description": "Join us for a scenic kayak on the lake.",
+        "schedule": "Saturdays, 9:00 AM - 12:00 PM",
+        "max_participants": 12,
+        "participants": []
+    },
+    "Trail Run": {
+        "description": "5k trail run through the hills.",
+        "schedule": "Sundays, 8:00 AM - 10:00 AM",
+        "max_participants": 30,
+        "participants": []
     }
 }
 
@@ -49,7 +61,16 @@ def root():
 
 @app.get("/activities")
 def get_activities():
-    return activities
+    """Return activities with formatted descriptions"""
+    return {
+        name: {
+            "description": activity["description"],
+            "schedule": activity["schedule"],
+            "max_participants": activity["max_participants"],
+            "participants_count": len(activity["participants"])
+        }
+        for name, activity in activities.items()
+    }
 
 
 @app.post("/activities/{activity_name}/signup")
@@ -63,5 +84,23 @@ def signup_for_activity(activity_name: str, email: str):
     activity = activities[activity_name]
 
     # Add student
+    # Validate student is not already signed up
+    if len(activity["participants"]) >= activity["max_participants"]:
+        raise HTTPException(status_code=400, detail="Activity is full")
     activity["participants"].append(email)
     return {"message": f"Signed up {email} for {activity_name}"}
+
+
+@app.post("/activities/{activity_name}/unregister")
+def unregister_from_activity(activity_name: str, email: str):
+    """Unregister a student from an activity"""
+    if activity_name not in activities:
+        raise HTTPException(status_code=404, detail="Activity not found")
+
+    activity = activities[activity_name]
+
+    if email not in activity["participants"]:
+        raise HTTPException(status_code=404, detail="Participant not found in activity")
+
+    activity["participants"].remove(email)
+    return {"message": f"Unregistered {email} from {activity_name}"}
