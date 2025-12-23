@@ -59,8 +59,37 @@
         pname.className = 'participant-name';
         pname.textContent = name;
 
+        // delete button to unregister participant
+        const remove = document.createElement('button');
+        remove.className = 'participant-remove';
+        remove.type = 'button';
+        remove.setAttribute('aria-label', `Remove ${name}`);
+        remove.textContent = '✕';
+        remove.addEventListener('click', (e) => {
+          e.stopPropagation();
+
+          // update the data-participants attribute
+          const current = parseParticipants(card.getAttribute('data-participants'));
+          const idx = current.indexOf(name);
+          if (idx !== -1) {
+            current.splice(idx, 1);
+            card.setAttribute('data-participants', JSON.stringify(current));
+          }
+
+          // remove from DOM
+          li.remove();
+
+          // If the participant looks like an email and the card has a title, call backend to unregister
+          const title = card.querySelector('h4') ? card.querySelector('h4').textContent.trim() : '';
+          if (name && name.includes('@') && title) {
+            fetch(`/activities/${encodeURIComponent(title)}/unregister?email=${encodeURIComponent(name)}`, { method: 'POST' })
+              .catch(() => { /* ignore network errors for sample data */ });
+          }
+        });
+
         li.appendChild(avatar);
         li.appendChild(pname);
+        li.appendChild(remove);
         list.appendChild(li);
       });
       container.appendChild(list);
